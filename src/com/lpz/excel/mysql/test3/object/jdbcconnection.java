@@ -6,6 +6,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 import com.lpz.excel.mysql.test3ok.DButil;
+import com.lpz.excel.mysql.test3ok.User;
 
 public class jdbcconnection {
 
@@ -19,8 +20,8 @@ public class jdbcconnection {
 		// c.setName("kaixin");
 		// Update(c);
 		// delete(1006);
-		Customer c = query(1005);
-		System.out.println(c.getId() + "," + c.getName() + "," + c.getEmail());
+		User c = query(11);
+		System.out.println(c.getId() + "," + c.getPhone());
 	}
 
 	static void insert(Customer c) {
@@ -74,27 +75,26 @@ public class jdbcconnection {
 		}
 	}
 
-	static Customer query(int id) {
-		String sql = "select * from haige where id=?";
+	static User query(int id) {
+		String sql = "select * from user where id=?";
 		Connection conn = DButil.open();
+		PreparedStatement pstmt = null;
 		try {
-			PreparedStatement pstmt = (PreparedStatement) conn.prepareStatement(sql);
+			pstmt = (PreparedStatement) conn.prepareStatement(sql);
 			pstmt.setInt(1, id);
 			ResultSet rs = pstmt.executeQuery();
 			if (rs.next()) {
-				String name = rs.getString(2);
-				String email = rs.getString(3);
-				Customer c = new Customer();
+				int it = rs.getInt(1);
+				String phone = rs.getString(2);
+				User c = new User();
 				c.setId(id);
-				c.setName(name);
-				c.setEmail(email);
+				c.setPhone(phone);
 				return c;
 			}
 		} catch (SQLException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} finally {
-			DButil.close(conn);
+			DButil.close(conn, pstmt);
 		}
 		return null;
 	}
