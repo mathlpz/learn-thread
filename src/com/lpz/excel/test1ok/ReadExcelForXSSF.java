@@ -16,8 +16,8 @@ import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.usermodel.WorkbookFactory;
 
-import com.lpz.excel.mysql.test3ok.JdbcConnection;
-import com.lpz.excel.mysql.test3ok.User;
+import com.lpz.mysql.test3ok.JdbcConnection;
+import com.lpz.mysql.test3ok.User;
 
 /**
  * 评估3处理流程：
