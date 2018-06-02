@@ -1,0 +1,6 @@
+# learn-thread
+multi-thread learning...
+
+the project is about some code for learn multi-thread, 
+and one demo to process Excel to get the phone number from the mixed datas
+and so on...
