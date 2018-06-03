@@ -1,4 +1,4 @@
-package com.lpz.mysql.test3.object;
+package com.lpz.mysql.test3object;
 
 public class Customer {
 	int id;
