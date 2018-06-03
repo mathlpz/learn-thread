@@ -13,6 +13,9 @@ import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.usermodel.WorkbookFactory;
+import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.lpz.mysql.test3ok.JdbcConnection;
 import com.lpz.mysql.test3ok.User;
@@ -20,7 +23,7 @@ import com.lpz.utils.StringUtil;
 
 /**
  * 评估3处理流程：
- * 1、通过readAndInsertExcel()分成两波数据；一波纯号码、一波杂乱数据
+ * 1、通过读取分成两波数据；一波纯号码、一波杂乱数据
  * 2、删除纯号码的重复记录；(20112 rows in set / 20329 - 217)
  * 		#Select MIN(id) From user Group By phone;
  * 		#Select MIN(id), phone, count(*) From user Group By phone HAVING count(*) > 1;
@@ -62,6 +65,8 @@ import com.lpz.utils.StringUtil;
  *
  */
 public class ReadExcelForXSSF {
+	
+	private final static Logger logger = LoggerFactory.getLogger(ReadExcelForXSSF.class);
 
 	public static int phoneListSize = 30000;
 	public static int phoneListNBSize = 10000;
@@ -76,6 +81,17 @@ public class ReadExcelForXSSF {
 	 */
 	public static void main(String[] args) {
 		
+		logger.info("ReadExcelForXSSF...");
+		
+		
+//		System.out.println(removeChineseStr("   sdf发AA三大赛的  发生地方生8 88   "));
+	}
+	
+	/**
+	 * 
+	 */
+	@Test
+	public void readAndInsertExcelTest() {
 		// 读取数据
 //		long startTime = System.currentTimeMillis();  
 //		new ReadExcelForXSSF().readAndInsertExcel();
@@ -83,17 +99,25 @@ public class ReadExcelForXSSF {
 //		long endTime = System.currentTimeMillis();  
 //        System.out.printf("readExcel and insert 用时：%sms-------------------------------", (endTime - startTime));  
 //        System.out.println();
+//		logger.info("readExcel and insert 用时：{}ms-------------------------------fileNamePath:{}", (endTime - startTime), fileNamePath);
         
-        // 处理数据
+	}
+	
+	/**
+	 * 
+	 */
+	@Test
+	public void dealWithUserNBTest() {
+		  // 处理数据
         long startTime = System.currentTimeMillis();  
+        
         new ReadExcelForXSSF().dealWithUserNB();
         
         long endTime = System.currentTimeMillis();  
         System.out.printf("dealWithUserNB 用时：%sms-----------------------", (endTime - startTime));  
         System.out.println();
+        logger.info("dealWithUserNB 用时：{}ms-----------------------fileNamePath:{}", (endTime - startTime), fileNamePath);  
 		
-		
-//		System.out.println(removeChineseStr("   sdf发AA三大赛的  发生地方生8 88   "));
 	}
 	
 	
@@ -103,53 +127,36 @@ public class ReadExcelForXSSF {
 		String tblName = "user";
 		
 		List<User> userNBList = JdbcConnection.queryUser(tblName);
-		System.out.println("dealWithUserNB queryUser user size:" + userNBList.size());
+		logger.info("dealWithUserNB queryUser user size:" + userNBList.size());
 		
 		List<User> toUpdateUserNBList = new ArrayList<User>();
 		
 		List<String> insertPhoneNB2List = new ArrayList<String>(phoneListNBSize);
 		for (User user : userNBList) {
 			String phone = user.getPhone();
-//			phone = removeChineseStr(phone);
+//			phone = StringUtil.removeChineseStr(phone);
 //			phone = phone.replace("：", "");
 //			phone = phone.replace("、", "");
 //			phone = phone.replace("/", "");
 //			phone = phone.replace("  ", "");
 //			phone = phone.replace("、", "");
-//			if (phone.startsWith(" ")) {
-//			    phone = phone.replace(" ", "").trim();
-//			    user.setPhone(phone);
-//			    toUpdateUserNBList.add(user);
-//			}
-//			if (phone.startsWith("；：")) {
-//				phone = phone.replace("；：", "").trim();
-//				user.setPhone(phone);
-//				toUpdateUserNBList.add(user);
-//			}
-//			if (phone.startsWith("　　")) {
-//				phone = phone.replace("　　", "").trim();
-//				user.setPhone(phone);
-//				toUpdateUserNBList.add(user);
-//			}
 //			if (!phone.startsWith("1")) {
-//				System.out.println(user.getId()+ "---------" + user.getPhone());
+//				logger.info(user.getId()+ "---------" + user.getPhone());
 //				String phoneTmp = phone.substring(1).trim();
 //				user.setPhone(phoneTmp);
-//				System.out.println(user.getId()+ "----====-----" + user.getPhone());
+//				logger.info(user.getId()+ "----====-----" + user.getPhone());
 //				toUpdateUserNBList.add(user);
 //			}
-			
 			
 			
 			// 去除末尾非数字
 			int length = phone.length();
 			if (length != 11) {
-				System.out.println(user.getId()+ "---------" + user.getPhone());
+				logger.warn(user.getId()+ "---------" + user.getPhone());
 			}
 			
 //			if (!Character.isDigit(phone.charAt(length-1))) {
-//			if (length > 11) {
-//				System.out.println(user.getId()+ "---------" + user.getPhone());
+//				logger.info(user.getId()+ "---------" + user.getPhone());
 //				user.setPhone(phone.substring(0, 11));
 //				toUpdateUserNBList.add(user);
 //			}
@@ -164,7 +171,7 @@ public class ReadExcelForXSSF {
 //				String substr2 = phone.substring(11, phone.length()).trim();
 //				if (substr2.length() < 11) {
 //					// 丢弃
-//					System.out.println("长度小于11，丢弃:" + substr2 + ", phone:" + phone);
+//					logger.info("长度小于11，丢弃:" + substr2 + ", phone:" + phone);
 //				} else {
 //					// >=11 第二部分插入
 //					insertPhoneNB2List.add(substr2);
@@ -190,7 +197,7 @@ public class ReadExcelForXSSF {
 		// 读取文件
 		File file = new File(fileNamePath);
 		if (!file.exists()) {
-			System.out.println("file not exist!!!");
+			logger.info("file not exist!!!");
 			return;
 		}
 		// 解析Excel
@@ -253,7 +260,7 @@ public class ReadExcelForXSSF {
 		Cell cell = row.getCell(0);
 		// 得到单元格样式
 //		CellStyle cellStyle = cell.getCellStyle();
-		System.out.println("行数：" + rowLength + ", 列数：" + colLength);
+		logger.info("行数：" + rowLength + ", 列数：" + colLength);
 		
 		int nullRow = 0;
 		int nullCell = 0;
@@ -279,7 +286,7 @@ public class ReadExcelForXSSF {
 			}
 			// 获取值
 			String stringCellValue = cell.getStringCellValue().trim();
-//			System.out.println(stringCellValue + "----" + i);
+//			logger.info(stringCellValue + "----" + i);
 			if (StringUtil.isEmpty(stringCellValue)) {
 				nullStrValue++;
 				continue;
@@ -297,6 +304,7 @@ public class ReadExcelForXSSF {
 		// 
 		System.out.printf("nullRow:%s, nullCell:%s, nullStrValue:%s", nullRow, nullCell, nullStrValue);
 		System.out.println();
+		logger.warn("nullRow:%s, nullCell:{}, nullStrValue:{}", nullRow, nullCell, nullStrValue);
 	}
 	
 	

@@ -18,10 +18,6 @@ import com.lpz.utils.StringUtil;
 /**
  * 利用javacsv2.0读写csv文件工具类
  * 
- * csv文件处理流程：
- * 1、读取csv文件的数据到数据库（>=11位字符）；
- * 2、
- * 
  * @author lpz
  *
  */
@@ -49,20 +45,12 @@ public class CsvUtil {
 		File[] files = baseFile.listFiles();
 		logger.info("~~directoryPath:{}, listFiles size:{}", directoryPath, files.length);
 		
-	}
-
-
-	
-	/**
-	 * 
-	 */
-	private static void dealWithCSVUser() {
-
 		// 创建生成导入csv文件
 		// createCSV(filePath);
 
-		
 	}
+
+
 	
 	/**
 	 * 读取并插入数据

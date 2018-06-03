@@ -208,6 +208,57 @@ public class JdbcConnection {
 			DButil.close(conn, pstmt);
 		}
 	}
+	
+	
+	/**
+	 * 
+	 * @param userList
+	 * @param dbName
+	 */
+	public static void deleteBatch(List<User> userList, String dbName) {
+		
+		logger.info("deleteBatch size:::" + userList.size() + ", dbTable:" + dbName);
+		
+		Connection conn = DButil.open();
+		PreparedStatement pstmt = null;
+		
+//		String sql = "delete from table where id in (0"; 
+//		for (int i=0; i < userList.size(); i++) { 
+//		  sql += "," + userList.get(i).getId();
+//		} 
+//		sql += ")"; 
+//		pstmt = conn.prepareStatement(sql); 
+//		pstmt.execute();
+		
+		// 注意是=，不是in
+		String sql = "delete from " + dbName + " where id = ?";
+		try {
+			// 关闭事务自动提交
+			conn.setAutoCommit(false);
+			pstmt = (PreparedStatement) conn.prepareStatement(sql);
+			for (int i = 0; i <  userList.size(); i++) {
+				// 把一个SQL命令加入命令列表
+				pstmt.setInt(1, userList.get(i).getId());
+				pstmt.addBatch();
+				// 1w条记录插入一次
+			    if (i != 0 && i % segmentSize == 0){
+			    	logger.info("~~segmentation deleteBatch: " + i);
+			         // 执行批量更新
+			    	pstmt.executeBatch();
+			         // 语句执行完毕，提交本事务
+			         conn.commit();
+			     }
+			}
+			// 最后插入不足1w条的数据
+	        pstmt.executeBatch();
+	        conn.commit();
+		} catch (SQLException e) {
+			e.printStackTrace();
+			logger.error(e.getMessage(), e);
+		} finally {
+			DButil.close(conn, pstmt);
+		}
+	}
 
 	/**
 	 * 
@@ -259,7 +310,6 @@ public class JdbcConnection {
 	 * @param phoneList
 	 */
 	public static void insertBatch(List<String> phoneList, String dbName) {
-		
 		logger.info("insertBatch size:::" + phoneList.size() + ", dbTable:" + dbName);
 		
 //		String sql = "insert into usernb(phone) value(?)";
