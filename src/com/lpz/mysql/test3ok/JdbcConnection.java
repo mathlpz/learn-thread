@@ -8,6 +8,9 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 
 /**
  *   （转）今天在做一个将excel数据导入数据库的程序时，由于数据量大，准备采用jdbc的批量插入。于是用了preparedStatement.addBatch();
@@ -31,8 +34,10 @@ import java.util.List;
  */
 public class JdbcConnection {
 	
+	private final static Logger logger = LoggerFactory.getLogger(JdbcConnection.class);
+	
 	// 分批插入
-	public static int segmentSize = 10000;
+	public static int segmentSize = 20000;
 
 	public static void main(String[] args) {
 		insert("yangxu", "yangxu@qq.com");
@@ -52,8 +57,8 @@ public class JdbcConnection {
 			pstmt.setString(2, email);
 			pstmt.executeUpdate();
 		} catch (SQLException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
+			logger.error(e.getMessage(), e);
 		} finally {
 			DButil.close(conn);
 		}
@@ -72,6 +77,7 @@ public class JdbcConnection {
 //			pstmt.executeUpdate();
 //		} catch (SQLException e) {
 //			e.printStackTrace();
+//	logger.error(e.getMessage(), e);
 //		} finally {
 //			DButil.close(conn);
 //		}
@@ -90,6 +96,7 @@ public class JdbcConnection {
 //			pstmt.executeUpdate();
 //		} catch (SQLException e) {
 //			e.printStackTrace();
+//	logger.error(e.getMessage(), e);
 //		} finally {
 //			DButil.close(conn);
 //		}
@@ -101,7 +108,7 @@ public class JdbcConnection {
 	 */
 	public static void insertDB(String phone, String dbName) {
 		 
-		System.out.println("insertDB. phone:" + phone + ", dbTable:" + dbName);
+		logger.info("insertDB. phone:" + phone + ", dbTable:" + dbName);
 		
 //		String sql = "insert into usernb(phone) value(?)";
 		String sql = "insert into " + dbName + "(phone) value(?)";
@@ -112,6 +119,7 @@ public class JdbcConnection {
 			pstmt.executeUpdate();
 		} catch (SQLException e) {
 			e.printStackTrace();
+			logger.error(e.getMessage(), e);
 		} finally {
 			DButil.close(conn);
 		}
@@ -164,7 +172,7 @@ public class JdbcConnection {
 	 */
 	public static void updateBatch(List<User> userList, String dbName) {
 		
-		System.out.println("updateBatch size:::" + userList.size() + ", dbTable:" + dbName);
+		logger.info("updateBatch size:::" + userList.size() + ", dbTable:" + dbName);
 		
 //		String sql = "update usernb set phone = ? where id = ?";
 		String sql = "update " + dbName + " set phone = ? where id = ?";
@@ -175,17 +183,14 @@ public class JdbcConnection {
 			conn.setAutoCommit(false);
 			pstmt = (PreparedStatement) conn.prepareStatement(sql);
 			
-			int num = userList.size();
-//			System.out.println("to updateBatch size: " + num);
-			
-			for (int i = 0; i < num; i++) {
+			for (int i = 0; i <  userList.size(); i++) {
 				// 把一个SQL命令加入命令列表
 				pstmt.setString(1, userList.get(i).getPhone());
 				pstmt.setInt(2, userList.get(i).getId());
 				pstmt.addBatch();
 				// 1w条记录插入一次
 			    if (i != 0 && i % segmentSize == 0){
-			    	System.out.println("~~segmentation updateUserNBBatch: " + i);
+			    	logger.info("~~segmentation updateUserNBBatch: " + i);
 			         // 执行批量更新
 			         pstmt.executeBatch();
 			         // 语句执行完毕，提交本事务
@@ -198,6 +203,7 @@ public class JdbcConnection {
 	        
 		} catch (SQLException e) {
 			e.printStackTrace();
+			logger.error(e.getMessage(), e);
 		} finally {
 			DButil.close(conn, pstmt);
 		}
@@ -240,6 +246,7 @@ public class JdbcConnection {
 //			
 //		} catch (SQLException e) {
 //			e.printStackTrace();
+//			logger.error(e.getMessage(), e);
 //		} finally {
 //			DButil.close(conn, pstmt);
 //		}
@@ -253,7 +260,7 @@ public class JdbcConnection {
 	 */
 	public static void insertBatch(List<String> phoneList, String dbName) {
 		
-		System.out.println("insertBatch size:::" + phoneList.size() + ", dbTable:" + dbName);
+		logger.info("insertBatch size:::" + phoneList.size() + ", dbTable:" + dbName);
 		
 //		String sql = "insert into usernb(phone) value(?)";
 		String sql = "insert into " + dbName + "(phone) value(?)";
@@ -264,17 +271,13 @@ public class JdbcConnection {
 			conn.setAutoCommit(false);
 			pstmt = (PreparedStatement) conn.prepareStatement(sql);
 
-			int num = phoneList.size();
-//			System.out.printf("to insert %s batch size: %s", dbName, num);
-//			System.out.println();
-			
-			for (int i = 0; i < num; i++) {
+			for (int i = 0; i < phoneList.size(); i++) {
 				pstmt.setString(1, phoneList.get(i));
 				// 把一个SQL命令加入命令列表 
 				pstmt.addBatch();
 				// 1w条记录插入一次
 			    if (i != 0 && i % segmentSize == 0){
-			    	System.out.println("~~segmentation insertBatch: " + i);
+			    	logger.info("~~segmentation insertBatch: " + i);
 			         // 执行批量更新
 			         pstmt.executeBatch();
 			         // 语句执行完毕，提交本事务
@@ -287,6 +290,7 @@ public class JdbcConnection {
 			conn.commit();
 			
 		} catch (SQLException e) {
+			logger.error(e.getMessage(), e);
 			e.printStackTrace();
 		} finally {
 			DButil.close(conn, pstmt);
@@ -299,7 +303,7 @@ public class JdbcConnection {
 	 */
 	public static List<User> queryUser(String dbName) {
 		
-		System.out.println("queryUserNB, dbTable:" + dbName);
+		logger.info("queryUserNB, dbTable:" + dbName);
 		
 		Connection conn = DButil.open();
 //		String sql = "select * from usernb";
@@ -319,6 +323,7 @@ public class JdbcConnection {
 			return userList;
 		} catch (SQLException e) {
 			e.printStackTrace();
+			logger.error(e.getMessage(), e);
 		} finally {
 			DButil.close(conn);
 		}

@@ -5,6 +5,9 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 /**
  * 
  * 
@@ -12,6 +15,10 @@ import java.sql.SQLException;
  *
  */
 public class DButil {
+	
+	
+	private final static Logger logger = LoggerFactory.getLogger(DButil.class);
+	
 	/*
 	 * 打开数据库
 	 */
@@ -20,8 +27,7 @@ public class DButil {
 	private static String username;
 	private static String password;
 	private static String dbip = "172.28.16.64";
-//	private static String dbname = "testdb";
-	private static String dbname = "testdb2";
+	private static String dbname = "testdb";
 
 	static {
 //		driver = "com.mysql.jdbc.Driver";// 需要的数据库驱动
@@ -34,11 +40,11 @@ public class DButil {
 	public static Connection open() {
 		try {
 			Class.forName(driver);
-			System.out.println("~~dbname:" + dbname);
+			logger.info("~~dbname:" + dbname);
 			return (Connection) DriverManager.getConnection(url, username, password);
 		} catch (Exception e) {
-			System.out.println("数据库连接失败！");
 			e.printStackTrace();
+			logger.error("数据库连接失败！" + e.getMessage(), e);
 		} // 加载驱动
 		return null;
 	}
@@ -47,19 +53,16 @@ public class DButil {
 	 * 关闭数据库
 	 */
 	public static void close(Connection conn, PreparedStatement pstmt) {
-		if (pstmt != null) {
-			try {
+		try {
+			if (pstmt != null) {
 				pstmt.close();
-			} catch (SQLException e) {
-				e.printStackTrace();
 			}
-		}
-		if (conn != null) {
-			try {
+			if (conn != null) {
 				conn.close();
-			} catch (SQLException e) {
-				e.printStackTrace();
 			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+			logger.error(e.getMessage(), e);
 		}
 	}
 	
@@ -72,6 +75,7 @@ public class DButil {
 				conn.close();
 			} catch (SQLException e) {
 				e.printStackTrace();
+				logger.error(e.getMessage(), e);
 			}
 		}
 	}
