@@ -74,20 +74,13 @@ public class ReadExcelForXSSF {
 	
 	
 //	public static String fileNamePath = "g:/test.xlsx";
-	public static String directoryPath = "G:/42excel/fang";
+	public static String directoryPath = "G:/42excel/che";
+//	public static String directoryPath = "G:/42excel/fang";
+//	public static String directoryPath = "G:/42excel/shouboxinjian";
 	
-//	public static String tableName = "user_excel_che";
-	public static String tableName = "user_excel_fang";
-	
-	/**
-	 * 
-	 * @param args
-	 */
-	public static void main(String[] args) {
-		
-		logger.info("ReadExcelForXSSF...");
-		
-	}
+	public static String tableName = "user_excel_che";
+//	public static String tableName = "user_excel_fang";
+//	public static String tableName = "user_excel_shouboxinjian";
 	
 	/**
 	 * 按照文件夹批量处理！
@@ -113,7 +106,7 @@ public class ReadExcelForXSSF {
 		}
 		
 		long endTime = System.currentTimeMillis();  
-		logger.info("readExcel and insert 用时：{}ms-------------------------------directoryPath:{}", (endTime - startTime), directoryPath);
+		logger.info("readAndInsertExcelBatchTest 用时：{}ms-------------------------------directoryPath:{}", (endTime - startTime), directoryPath);
 	}
 	
 	/**

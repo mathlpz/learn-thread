@@ -18,6 +18,8 @@ import com.lpz.utils.StringUtil;
  * 		SELECT phone FROM user_che WHERE CHAR_LENGTH(phone) > 11;
  * 		DELETE FROM user_che WHERE CHAR_LENGTH(TRIM(phone)) < 11;
  * 
+ * 		select count(1) from (Select MIN(id) From user_excel Group By phone) t;
+ * 
  * csv文件处理流程：
  * 1、读取csv文件的数据到数据库（>=11位字符）；
  * 		user_che:159267 = 161078-1811
@@ -40,9 +42,9 @@ public class ProcessDataUtil {
 
 	private final static Logger logger = LoggerFactory.getLogger(ProcessDataUtil.class);
 	
-	public static String tableName = "user_che_fang_csv_bak";
+	public static String tableName = "user_excel";
 	
-	public static int userListSize = 30000;
+	public static int userListSize = 50000;
 	public static int phoneListSize = 20000;
 	
 	
@@ -51,7 +53,7 @@ public class ProcessDataUtil {
 	}
 	
 	/**
-	 * 1
+	 * 1、处理字符串开头和结尾非法等信息，最后替换中间的特殊字符空格,\ -/等
 	 */
 	@Test
 	public void dealWithUserTest() {
@@ -66,7 +68,7 @@ public class ProcessDataUtil {
 	}
 	
 	/**
-	 * 2
+	 * 2、对于长度大于11的字符串，截取分开处理
 	 */
 	@Test
 	public void updateAndInsertUserTest() {
@@ -108,26 +110,26 @@ public class ProcessDataUtil {
 		for (User user : userNBList) {
 			String phone = user.getPhone();
 			
-//			phone = StringUtil.removeChineseStr(phone);
+			phone = StringUtil.removeChineseStr(phone);
 			int length = phone.length();
-			if (phone.length() != 11) {
-				logger.warn(user.getId()+ "---------" + user.getPhone());
-			}
+//			if (phone.length() > 11) {
+//				logger.warn(user.getId()+ "---------" + user.getPhone());
+//			}
 			
 			// 处理非1开头的字符，去除首位
-//			if (!phone.startsWith("1")) {
-//				logger.info("startsWith(1):" + user.getId()+ "---------" + user.getPhone());
-//				String phoneTmp = phone.substring(1).trim();
-//				user.setPhone(phoneTmp);
-//				toUpdateUserList.add(user);
-//			}
+			if (!phone.startsWith("1")) {
+				logger.info("startsWith(1):" + user.getId()+ "---------" + user.getPhone());
+				String phoneTmp = phone.substring(1).trim();
+				user.setPhone(phoneTmp);
+				toUpdateUserList.add(user);
+			}
 			// 处理非数字结束的字符串，去除末尾
-//			if (!Character.isDigit(phone.charAt(length-1))) {
-//				logger.info("end isDigit(1):" + user.getId()+ "---------" + user.getPhone());
-//				phone = phone.substring(0, length-1).trim();
-//				user.setPhone(phone);
-//				toUpdateUserList.add(user);
-//			}
+			if (!Character.isDigit(phone.charAt(length-1))) {
+				logger.info("end isDigit(?):" + user.getId()+ "---------" + user.getPhone());
+				phone = phone.substring(0, length-1).trim();
+				user.setPhone(phone);
+				toUpdateUserList.add(user);
+			}
 			
 			// 最后处理数据时最好考虑到，号码中间分隔符等，替换处理后再执行updateAndInsertCSVUser操作!!!
 			// 如：1,588,319,0，130/1398181，1|||1398180，135,415,630
@@ -136,7 +138,7 @@ public class ProcessDataUtil {
 			
 		}
 		
-//		JdbcConnection.updateBatch(toUpdateUserList, tableName);
+		JdbcConnection.updateBatch(toUpdateUserList, tableName);
 		
 	}
 	
@@ -159,7 +161,7 @@ public class ProcessDataUtil {
 			// 多位字符串
 			if (phone.length() > 11) {
 				// 拆分成多部分，首部分更新！
-				String substr1 = phone.substring(0, 11);
+				String substr1 = phone.substring(0, 11).trim();
 				user.setPhone(substr1);
 				toUpdateUserList.add(user);
 				// 剩余部分

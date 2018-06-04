@@ -38,6 +38,8 @@ public class JdbcConnection {
 	
 	// 分批插入
 	public static int segmentSize = 20000;
+	
+	public static int queryUserSize = 1100000;
 
 	public static void main(String[] args) {
 		insert("yangxu", "yangxu@qq.com");
@@ -358,7 +360,7 @@ public class JdbcConnection {
 		Connection conn = DButil.open();
 //		String sql = "select * from usernb";
 		String sql = "select * from " + dbName;
-		List<User> userList = new ArrayList<User>();
+		List<User> userList = new ArrayList<User>(queryUserSize);
 		try {
 			Statement pstmt = conn.createStatement();
 			ResultSet rs = pstmt.executeQuery(sql);

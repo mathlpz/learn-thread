@@ -26,13 +26,14 @@ public class DButil {
 	private static String url;
 	private static String username;
 	private static String password;
-	private static String dbip = "172.28.16.64";
+//	private static String dbip = "172.28.16.64";
+	private static String dbip = "127.0.0.1";
 	private static String dbname = "testdb";
 
 	static {
 //		driver = "com.mysql.jdbc.Driver";// 需要的数据库驱动
 		driver = "com.mysql.cj.jdbc.Driver";// 需要的数据库驱动
-		url = "jdbc:mysql://" + dbip + ":3306/" + dbname + "?allowMultiQueries=true&autoReconnect=true&useUnicode=true&characterEncoding=UTF-8";// 数据库名路径
+		url = "jdbc:mysql://" + dbip + ":3306/" + dbname + "?serverTimezone=UTC&allowMultiQueries=true&autoReconnect=true&useUnicode=true&characterEncoding=UTF-8&useSSL=false";// 数据库名路径
 		username = "root";
 		password = "123456";
 	}
@@ -40,7 +41,7 @@ public class DButil {
 	public static Connection open() {
 		try {
 			Class.forName(driver);
-			logger.info("~~dbname:" + dbname);
+			logger.info("~~~dbip:{}~~~dbname:{}", dbip, dbname);
 			return (Connection) DriverManager.getConnection(url, username, password);
 		} catch (Exception e) {
 			e.printStackTrace();
