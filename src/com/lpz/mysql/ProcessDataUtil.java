@@ -50,12 +50,15 @@ public class ProcessDataUtil {
 		System.out.println("main...");
 	}
 	
+	/**
+	 * 1
+	 */
 	@Test
-	public void dealWithCSVUserTest() {
-		logger.info("dealWithCSVUser...");
+	public void dealWithUserTest() {
+		logger.info("dealWithUserTest...");
 		
 		long startTime = System.currentTimeMillis();
-		new ProcessDataUtil().dealWithCSVUser();
+		new ProcessDataUtil().dealWithUser();
 		
 		long endTime = System.currentTimeMillis();
 		logger.info("dealWithCSVUserTest 用时：{}ms-----------------------", (endTime - startTime));
@@ -63,7 +66,22 @@ public class ProcessDataUtil {
 	}
 	
 	/**
-	 * 删除非手机号数据
+	 * 2
+	 */
+	@Test
+	public void updateAndInsertUserTest() {
+		logger.info("updateAndInsertUserTest...");
+		
+		long startTime = System.currentTimeMillis();
+		new ProcessDataUtil().updateAndInsertUser();
+		
+		long endTime = System.currentTimeMillis();
+		logger.info("dealWithCSVUserTest 用时：{}ms-----------------------", (endTime - startTime));
+		
+	}
+	
+	/**
+	 * 3、删除非手机号数据
 	 */
 	@Test
 	public void deleteNotBobilePhoneTest() {
@@ -78,16 +96,14 @@ public class ProcessDataUtil {
 	
 	
 	/**
-	 * 
+	 * 处理更新数据杂乱格式
 	 */
-	private void dealWithCSVUser() {
+	private void dealWithUser() {
 
 		List<User> userNBList = JdbcConnection.queryUser(tableName);
 		logger.info("dealWithCSVUser queryUser user size:" + userNBList.size());
 		
-//		List<User> toUpdateUserList = new ArrayList<User>(userListSize);
-		
-//		List<String> insertPhoneList = new ArrayList<String>(phoneListSize);
+		List<User> toUpdateUserList = new ArrayList<User>(userListSize);
 		
 		for (User user : userNBList) {
 			String phone = user.getPhone();
@@ -113,29 +129,54 @@ public class ProcessDataUtil {
 //				toUpdateUserList.add(user);
 //			}
 			
+			// 最后处理数据时最好考虑到，号码中间分隔符等，替换处理后再执行updateAndInsertCSVUser操作!!!
+			// 如：1,588,319,0，130/1398181，1|||1398180，135,415,630
+			// phone = phone.replace(",", "");
 			
-//			if (phone.length() > 11) {
-//				// 拆分成多部分，首部分更新！
-//				String substr1 = phone.substring(0, 11);
-//				user.setPhone(substr1);
-//				toUpdateUserList.add(user);
-//				// 剩余部分
-//				String substr2 = phone.substring(11, phone.length()).trim();
-//				if (substr2.length() < 11) {
-//					// 丢弃
-//					logger.info("长度小于11，丢弃:" + substr2 + ", phone:" + phone);
-//				} else {
-//					// >=11 第二部分插入
-//					insertPhoneList.add(substr2);
-//				}
-//			}
+			
 		}
 		
-//		JdbcConnection.insertBatch(insertPhoneList, tableName);
-
 //		JdbcConnection.updateBatch(toUpdateUserList, tableName);
 		
+	}
+	
+	
+	/**
+	 * 截取更新插入单行多数据的情况
+	 */
+	private void updateAndInsertUser() {
+
+		List<User> userNBList = JdbcConnection.queryUser(tableName);
+		logger.info("updateAndInsertCSVUser queryUser user size:" + userNBList.size());
 		
+		List<User> toUpdateUserList = new ArrayList<User>(userListSize);
+		
+		List<String> insertPhoneList = new ArrayList<String>(phoneListSize);
+		
+		for (User user : userNBList) {
+			String phone = user.getPhone();
+			
+			// 多位字符串
+			if (phone.length() > 11) {
+				// 拆分成多部分，首部分更新！
+				String substr1 = phone.substring(0, 11);
+				user.setPhone(substr1);
+				toUpdateUserList.add(user);
+				// 剩余部分
+				String substr2 = phone.substring(11, phone.length()).trim();
+				if (substr2.length() < 11) {
+					// 丢弃
+					logger.info("长度小于11，丢弃:" + substr2 + ", phone:" + phone);
+				} else {
+					// >=11 第二部分插入
+					insertPhoneList.add(substr2);
+				}
+			}
+		}
+		
+		JdbcConnection.insertBatch(insertPhoneList, tableName);
+
+		JdbcConnection.updateBatch(toUpdateUserList, tableName);
 		
 	}
 	

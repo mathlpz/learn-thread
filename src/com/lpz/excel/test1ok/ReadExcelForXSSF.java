@@ -18,12 +18,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.lpz.mysql.test3ok.JdbcConnection;
-import com.lpz.mysql.test3ok.User;
 import com.lpz.utils.StringUtil;
 
 /**
  * 评估3处理流程：
- * 1、通过读取分成两波数据；一波纯号码、一波杂乱数据
+ * 1、通过读取分成两波数据；一波纯号码、一波杂乱数据（同时读入同时处理）
  * 2、删除纯号码的重复记录；(20112 rows in set / 20329 - 217)
  * 		#Select MIN(id) From user Group By phone;
  * 		#Select MIN(id), phone, count(*) From user Group By phone HAVING count(*) > 1;
@@ -69,11 +68,16 @@ public class ReadExcelForXSSF {
 	private final static Logger logger = LoggerFactory.getLogger(ReadExcelForXSSF.class);
 
 	public static int phoneListSize = 30000;
-	public static int phoneListNBSize = 10000;
+	
+	// excel中第几个sheet
+	public static int sheetInt = 0;
 	
 	
 //	public static String fileNamePath = "g:/test.xlsx";
-	public static String fileNamePath = "g:/评估1.xlsx";
+	public static String directoryPath = "G:/42excel/fang";
+	
+//	public static String tableName = "user_excel_che";
+	public static String tableName = "user_excel_fang";
 	
 	/**
 	 * 
@@ -83,123 +87,74 @@ public class ReadExcelForXSSF {
 		
 		logger.info("ReadExcelForXSSF...");
 		
-		
-//		System.out.println(removeChineseStr("   sdf发AA三大赛的  发生地方生8 88   "));
 	}
 	
 	/**
-	 * 
+	 * 按照文件夹批量处理！
 	 */
 	@Test
-	public void readAndInsertExcelTest() {
-		// 读取数据
-//		long startTime = System.currentTimeMillis();  
-//		new ReadExcelForXSSF().readAndInsertExcel();
-//		
-//		long endTime = System.currentTimeMillis();  
-//        System.out.printf("readExcel and insert 用时：%sms-------------------------------", (endTime - startTime));  
-//        System.out.println();
-//		logger.info("readExcel and insert 用时：{}ms-------------------------------fileNamePath:{}", (endTime - startTime), fileNamePath);
-        
-	}
-	
-	/**
-	 * 
-	 */
-	@Test
-	public void dealWithUserNBTest() {
-		  // 处理数据
-        long startTime = System.currentTimeMillis();  
-        
-        new ReadExcelForXSSF().dealWithUserNB();
-        
-        long endTime = System.currentTimeMillis();  
-        System.out.printf("dealWithUserNB 用时：%sms-----------------------", (endTime - startTime));  
-        System.out.println();
-        logger.info("dealWithUserNB 用时：{}ms-----------------------fileNamePath:{}", (endTime - startTime), fileNamePath);  
+	public void readAndInsertExcelBatchTest() {
 		
-	}
-	
-	
-	public void dealWithUserNB() {
+		ReadExcelForXSSF readExcelForXSSF = new ReadExcelForXSSF();
 		
-//		String tblName = "usernb2";
-		String tblName = "user";
+		long startTime = System.currentTimeMillis();
+		// 读取文件
+		File baseFile = new File(directoryPath);
+		if (baseFile.isFile() || !baseFile.exists()) {
+			logger.error("directoryPath not exist!!!" + directoryPath);
+            return ;
+        }
+		File[] files = baseFile.listFiles();
+		logger.info("~~directoryPath:{}, listFiles size:{}", directoryPath, files.length);
 		
-		List<User> userNBList = JdbcConnection.queryUser(tblName);
-		logger.info("dealWithUserNB queryUser user size:" + userNBList.size());
-		
-		List<User> toUpdateUserNBList = new ArrayList<User>();
-		
-		List<String> insertPhoneNB2List = new ArrayList<String>(phoneListNBSize);
-		for (User user : userNBList) {
-			String phone = user.getPhone();
-//			phone = StringUtil.removeChineseStr(phone);
-//			phone = phone.replace("：", "");
-//			phone = phone.replace("、", "");
-//			phone = phone.replace("/", "");
-//			phone = phone.replace("  ", "");
-//			phone = phone.replace("、", "");
-//			if (!phone.startsWith("1")) {
-//				logger.info(user.getId()+ "---------" + user.getPhone());
-//				String phoneTmp = phone.substring(1).trim();
-//				user.setPhone(phoneTmp);
-//				logger.info(user.getId()+ "----====-----" + user.getPhone());
-//				toUpdateUserNBList.add(user);
-//			}
-			
-			
-			// 去除末尾非数字
-			int length = phone.length();
-			if (length != 11) {
-				logger.warn(user.getId()+ "---------" + user.getPhone());
-			}
-			
-//			if (!Character.isDigit(phone.charAt(length-1))) {
-//				logger.info(user.getId()+ "---------" + user.getPhone());
-//				user.setPhone(phone.substring(0, 11));
-//				toUpdateUserNBList.add(user);
-//			}
-			
-			
-//			if (phone.length() > 11) {
-//				// 拆分成多部分，首部分更新
-//				String substr1 = phone.substring(0, 11);
-//				user.setPhone(substr1);
-//				toUpdateUserNBList.add(user);
-//				// 剩余部分
-//				String substr2 = phone.substring(11, phone.length()).trim();
-//				if (substr2.length() < 11) {
-//					// 丢弃
-//					logger.info("长度小于11，丢弃:" + substr2 + ", phone:" + phone);
-//				} else {
-//					// >=11 第二部分插入
-//					insertPhoneNB2List.add(substr2);
-//				}
-//			} 
-			
+		for (File fileName:files) {
+			String absolutePath = fileName.getAbsolutePath();
+			readExcelForXSSF.dealSingleFile(absolutePath);
 		}
 		
-		
-//		JdbcConnection.insertBatch(insertPhoneNB2List, tblName);
-//		
-//		JdbcConnection.updateBatch(toUpdateUserNBList, tblName);
-		
-		
+		long endTime = System.currentTimeMillis();  
+		logger.info("readExcel and insert 用时：{}ms-------------------------------directoryPath:{}", (endTime - startTime), directoryPath);
+	}
+	
+	/**
+	 * 单个处理文件！
+	 */
+	@Test
+	public void readAndInsertExcelSingleTest() {
+		String fileAbsolutePath = "g:/test.xlsx";
+		new ReadExcelForXSSF().dealSingleFile(fileAbsolutePath);
 	}
 	
 	
 	
 	/**
 	 * 
+	 * @param fileAbsolutePath 文件绝对路径
 	 */
-	public void readAndInsertExcel() {
+	private void dealSingleFile(String fileAbsolutePath) {
+		// 读取数据
+		long startTime = System.currentTimeMillis(); 
+		
+		new ReadExcelForXSSF().readAndInsertExcel(fileAbsolutePath);
+		
+		long endTime = System.currentTimeMillis();  
+		logger.info("readExcel and insert 用时：{}ms-------------------------------fileAbsolutePath:{}", (endTime - startTime), fileAbsolutePath);
+	}
+	
+	
+	
+	/**
+	 * 
+	 * @param fileAbsolutePath
+	 */
+	private void readAndInsertExcel(String fileAbsolutePath) {
 		// 读取文件
-		File file = new File(fileNamePath);
+		File file = new File(fileAbsolutePath);
 		if (!file.exists()) {
-			logger.info("file not exist!!!");
+			logger.error("file not exist!!!");
 			return;
 		}
+		logger.info("go to read and insert Excel File: " + fileAbsolutePath);
 		// 解析Excel
 		InputStream inputStream = null;
 		Workbook workbook = null;
@@ -217,18 +172,13 @@ public class ReadExcelForXSSF {
 				}
 			}
 		}
-			
-		// list for batch
-		List<String> phoneList = new ArrayList<String>(phoneListSize);
-//		List<String> phoneNBList = new ArrayList<String>(phoneListNBSize);
+		
 		// 组装获取
-		acquirePhone(workbook, phoneList, null);
+		List<String> phoneList = acquirePhone(workbook);
+		
+		JdbcConnection.insertBatch(phoneList, tableName);
 		
 		
-		JdbcConnection.insertBatch(phoneList, "user");
-		
-//		JdbcConnection.insertBatch(phoneNBList, "usernb");
-
 //		// 将修改好的数据保存
 //		OutputStream out = new FileOutputStream(file);
 //		workbook.write(out);
@@ -247,17 +197,16 @@ public class ReadExcelForXSSF {
 	 * @param phoneList
 	 * @param phoneNBList
 	 */
-	private void acquirePhone(Workbook workbook, List<String> phoneList, List<String> phoneNBList){
+	private List<String> acquirePhone(Workbook workbook){
+		// list for batch
+		List<String> phoneList = new ArrayList<String>(phoneListSize);
+		
 		// 工作表对象，sheet表单
-		Sheet sheet = workbook.getSheetAt(11);
-		// 总行数
-		int rowLength = sheet.getLastRowNum() + 1;
-		// 工作表的列
-		Row row = sheet.getRow(0);
-		// 总列数
-		int colLength = row.getLastCellNum();
-		// 得到指定的单元格
-		Cell cell = row.getCell(0);
+		Sheet sheet = workbook.getSheetAt(sheetInt);
+		int rowLength = sheet.getLastRowNum() + 1; // 总行数
+		Row row = sheet.getRow(0); // 工作表的列
+		int colLength = row.getLastCellNum(); // 总列数
+		Cell cell = row.getCell(0); // 得到指定的单元格
 		// 得到单元格样式
 //		CellStyle cellStyle = cell.getCellStyle();
 		logger.info("行数：" + rowLength + ", 列数：" + colLength);
@@ -275,8 +224,7 @@ public class ReadExcelForXSSF {
 				continue;
 			}
 			cell = row.getCell(0);
-			// Excel数据Cell有不同的类型，当我们试图从一个数字类型的Cell读取出一个字符串时就有可能报异常： Cannot get a STRING value from a NUMERIC cell
-			// 将所有的需要读的Cell表格设置为String格式
+			// Excel数据Cell有不同的类型，当我们试图从一个数字类型的Cell读取出一个字符串时就有可能报异常： Cannot get a STRING value from a NUMERIC cell。 将所有的需要读的Cell表格设置为String格式
 			if (cell != null) {
 				cell.setCellType(CellType.STRING);
 			} else {
@@ -292,19 +240,14 @@ public class ReadExcelForXSSF {
 				continue;
 			}
 			
-			phoneList.add(stringCellValue);
 			// 存入数据库
-//			if (isMobileNum(stringCellValue)) {
-//				phoneList.add(stringCellValue);
-//			} else {
-//				phoneNBList.add(stringCellValue);
-//			}
+			phoneList.add(stringCellValue);
 //			}
 		}
 		// 
-		System.out.printf("nullRow:%s, nullCell:%s, nullStrValue:%s", nullRow, nullCell, nullStrValue);
-		System.out.println();
-		logger.warn("nullRow:%s, nullCell:{}, nullStrValue:{}", nullRow, nullCell, nullStrValue);
+		logger.warn("nullRow:{}, nullCell:{}, nullStrValue:{}", nullRow, nullCell, nullStrValue);
+		
+		return phoneList;
 	}
 	
 	
