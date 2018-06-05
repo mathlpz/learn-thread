@@ -102,7 +102,7 @@ public class ReadExcelForXSSF {
 		
 		for (File fileName:files) {
 			String absolutePath = fileName.getAbsolutePath();
-			readExcelForXSSF.dealSingleFile(absolutePath);
+			readExcelForXSSF.readAndInsertSingleFile(absolutePath);
 		}
 		
 		long endTime = System.currentTimeMillis();  
@@ -115,7 +115,7 @@ public class ReadExcelForXSSF {
 	@Test
 	public void readAndInsertExcelSingleTest() {
 		String fileAbsolutePath = "g:/test.xlsx";
-		new ReadExcelForXSSF().dealSingleFile(fileAbsolutePath);
+		new ReadExcelForXSSF().readAndInsertSingleFile(fileAbsolutePath);
 	}
 	
 	
@@ -124,7 +124,7 @@ public class ReadExcelForXSSF {
 	 * 
 	 * @param fileAbsolutePath 文件绝对路径
 	 */
-	private void dealSingleFile(String fileAbsolutePath) {
+	private void readAndInsertSingleFile(String fileAbsolutePath) {
 		// 读取数据
 		long startTime = System.currentTimeMillis(); 
 		

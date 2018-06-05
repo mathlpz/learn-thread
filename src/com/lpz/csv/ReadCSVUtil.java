@@ -21,9 +21,9 @@ import com.lpz.utils.StringUtil;
  * @author lpz
  *
  */
-public class CsvUtil {
+public class ReadCSVUtil {
 	
-	private final static Logger logger = LoggerFactory.getLogger(CsvUtil.class);
+	private final static Logger logger = LoggerFactory.getLogger(ReadCSVUtil.class);
 	
 	public static String dbTable = "user_fang";
 	
@@ -57,7 +57,7 @@ public class CsvUtil {
 	 */
 	@Test
 	public void insertDataFromCsvTest() {
-		CsvUtil csvUtil = new CsvUtil();
+		ReadCSVUtil csvUtil = new ReadCSVUtil();
 		// 读取文件
 		File baseFile = new File(directoryPath);
 		if (baseFile.isFile() || !baseFile.exists()) {

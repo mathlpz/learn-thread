@@ -23,12 +23,26 @@ public class StringUtil extends StringUtils{
 	    */
 	    String num = "[1][345678]\\d{9}";//"[1]"代表第1位为数字1，"[3578]"代表第二位可以为3、5、7、8中
 	                                    // 的一个，"\\d{9}"代表后面是可以是0～9的数字，有9位。
-//	    if (null == number || "" == number.trim()) {
-//	        return false;
-//	    } else {
-	        //matches():字符串是否在给定的正则表达式匹配
-	        return number.matches(num);
-//	    }
+        //matches():字符串是否在给定的正则表达式匹配
+        return number.matches(num);
+	}
+	
+	/**
+	 * 空格、回车、换行符、制表符
+	 * \n 回车(\u000a) 
+		\t 水平制表符(\u0009) 
+		\s 空格(\u0008) 
+		\r 换行(\u000d)
+	 * @param str
+	 * @return
+	 */
+	public static String replaceBlank(String str) {
+		if (str != null) {
+			Pattern p = Pattern.compile("\\s*|\t|\r|\n");
+			Matcher m = p.matcher(str);
+			return m.replaceAll("").trim();
+		}
+		return null;
 	}
 	
 	private static String REGEX_CHINESE = "[\u4e00-\u9fa5]";// 中文正则

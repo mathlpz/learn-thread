@@ -172,7 +172,7 @@ public class JdbcConnection {
 	 * 
 	 * @param phoneList
 	 */
-	public static void updateBatch(List<User> userList, String dbName) {
+	public static void updateUserBatch(List<User> userList, String dbName) {
 		
 		logger.info("updateBatch size:::" + userList.size() + ", dbTable:" + dbName);
 		

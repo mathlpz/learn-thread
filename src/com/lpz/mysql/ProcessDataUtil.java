@@ -42,10 +42,11 @@ public class ProcessDataUtil {
 
 	private final static Logger logger = LoggerFactory.getLogger(ProcessDataUtil.class);
 	
-	public static String tableName = "user_excel";
+//	public static String tableName = "user_excel";
+	public static String tableName = "user_txt";
 	
-	public static int userListSize = 50000;
-	public static int phoneListSize = 20000;
+	public static int userListSize = 5000;
+	public static int phoneListSize = 2000;
 	
 	
 	public static void main(String[] args) {
@@ -63,12 +64,12 @@ public class ProcessDataUtil {
 		new ProcessDataUtil().dealWithUser();
 		
 		long endTime = System.currentTimeMillis();
-		logger.info("dealWithCSVUserTest 用时：{}ms-----------------------", (endTime - startTime));
+		logger.info("dealWithUserTest 用时：{}ms-----------------------", (endTime - startTime));
 		
 	}
 	
 	/**
-	 * 2、对于长度大于11的字符串，截取分开处理
+	 * 2、对于长度大于11的字符串，截取分开处理！不能连续执行两次！！！交叉1执行
 	 */
 	@Test
 	public void updateAndInsertUserTest() {
@@ -102,15 +103,17 @@ public class ProcessDataUtil {
 	 */
 	private void dealWithUser() {
 
-		List<User> userNBList = JdbcConnection.queryUser(tableName);
-		logger.info("dealWithCSVUser queryUser user size:" + userNBList.size());
+		List<User> userList = JdbcConnection.queryUser(tableName);
+		logger.info("dealWithUser queryUser user size:" + userList.size());
 		
 		List<User> toUpdateUserList = new ArrayList<User>(userListSize);
 		
-		for (User user : userNBList) {
+		for (User user : userList) {
 			String phone = user.getPhone();
 			
 			phone = StringUtil.removeChineseStr(phone);
+//			user.setPhone(phone);
+//			toUpdateUserList.add(user);
 			int length = phone.length();
 //			if (phone.length() > 11) {
 //				logger.warn(user.getId()+ "---------" + user.getPhone());
@@ -138,7 +141,7 @@ public class ProcessDataUtil {
 			
 		}
 		
-		JdbcConnection.updateBatch(toUpdateUserList, tableName);
+		JdbcConnection.updateUserBatch(toUpdateUserList, tableName);
 		
 	}
 	
@@ -149,7 +152,7 @@ public class ProcessDataUtil {
 	private void updateAndInsertUser() {
 
 		List<User> userNBList = JdbcConnection.queryUser(tableName);
-		logger.info("updateAndInsertCSVUser queryUser user size:" + userNBList.size());
+		logger.info("updateAndInsertUser queryUser user size:" + userNBList.size());
 		
 		List<User> toUpdateUserList = new ArrayList<User>(userListSize);
 		
@@ -178,7 +181,7 @@ public class ProcessDataUtil {
 		
 		JdbcConnection.insertBatch(insertPhoneList, tableName);
 
-		JdbcConnection.updateBatch(toUpdateUserList, tableName);
+		JdbcConnection.updateUserBatch(toUpdateUserList, tableName);
 		
 	}
 	
