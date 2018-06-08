@@ -7,8 +7,8 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.lpz.mysql.test3ok.JdbcConnection;
-import com.lpz.mysql.test3ok.User;
+import com.lpz.mysql.db.JdbcConnection;
+import com.lpz.mysql.db.User;
 import com.lpz.utils.StringUtil;
 
 /**

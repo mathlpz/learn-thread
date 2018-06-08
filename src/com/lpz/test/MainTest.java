@@ -1,4 +1,4 @@
-package com.lpz.thread;
+package com.lpz.test;
 
 import com.alibaba.fastjson.JSON;
 

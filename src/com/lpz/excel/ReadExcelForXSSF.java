@@ -1,4 +1,4 @@
-package com.lpz.excel.test1ok;
+package com.lpz.excel;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -17,7 +17,7 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.lpz.mysql.test3ok.JdbcConnection;
+import com.lpz.mysql.db.JdbcConnection;
 import com.lpz.utils.StringUtil;
 
 /**

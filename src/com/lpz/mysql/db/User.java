@@ -1,4 +1,4 @@
-package com.lpz.mysql.test3ok;
+package com.lpz.mysql.db;
 
 import java.io.Serializable;
 
