@@ -49,6 +49,39 @@ public class DButil {
 		} // 加载驱动
 		return null;
 	}
+	
+	
+	/**
+	 * test1
+	 * 最常见的ThreadLocal使用场景为 用来解决 数据库连接、Session管理等。
+	 */
+	private static ThreadLocal<Connection> connectionHolder = new ThreadLocal<Connection>() {
+		public Connection initialValue() {
+		    try {
+				return DriverManager.getConnection(url, username, password);
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		    return null;
+		}
+	};
+	public static Connection getConnection() {
+		return connectionHolder.get();
+	}
+//	private static final ThreadLocal threadSession = new ThreadLocal();
+//	public static Session getSession() throws InfrastructureException {
+//	    Session s = (Session) threadSession.get();
+//	    try {
+//	        if (s == null) {
+//	            s = getSessionFactory().openSession();
+//	            threadSession.set(s);
+//	        }
+//	    } catch (HibernateException ex) {
+//	        throw new InfrastructureException(ex);
+//	    }
+//	    return s;
+//	}
+
 
 	/*
 	 * 关闭数据库
