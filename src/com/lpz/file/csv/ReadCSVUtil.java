@@ -1,4 +1,4 @@
-package com.lpz.csv;
+package com.lpz.file.csv;
 
 import java.io.File;
 import java.io.FileOutputStream;

@@ -1,4 +1,4 @@
-package com.lpz.excel;
+package com.lpz.file.excel;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;

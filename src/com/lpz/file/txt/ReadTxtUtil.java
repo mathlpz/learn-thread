@@ -1,4 +1,4 @@
-package com.lpz.txt;
+package com.lpz.file.txt;
 
 import java.io.BufferedReader;
 import java.io.File;
