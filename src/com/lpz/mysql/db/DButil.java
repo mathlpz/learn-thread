@@ -68,6 +68,7 @@ public class DButil {
 	public static Connection getConnection() {
 		return connectionHolder.get();
 	}
+	// hibernate中典型的ThreadLocal的应用：
 //	private static final ThreadLocal threadSession = new ThreadLocal();
 //	public static Session getSession() throws InfrastructureException {
 //	    Session s = (Session) threadSession.get();
