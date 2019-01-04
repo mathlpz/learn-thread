@@ -6,14 +6,25 @@ import java.util.List;
 import org.apache.zookeeper.WatchedEvent;
 import org.apache.zookeeper.Watcher;
 import org.apache.zookeeper.ZooKeeper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+/**
+ * 模拟客户端连接ZooKeeper
+ * @author lpz
+ *
+ */
 public class DistributedClient {
+	
+	private final static Logger logger = LoggerFactory.getLogger(DistributedClient.class);
 
 	private static final String connectString = "172.28.16.45:2181,172.28.16.53:2181,172.28.16.62:2181";
 	private static final int sessionTimeout = 2000;
 	private static final String parentNode = "/servers";
+	
 	// 注意:加volatile的意义何在？
 	private volatile List<String> serverList;
+	// 定义ZooKeeper客户端连接服务器
 	private ZooKeeper zk = null;
 
 	/**
@@ -26,6 +37,8 @@ public class DistributedClient {
 		zk = new ZooKeeper(connectString, sessionTimeout, new Watcher() {
 			@Override
 			public void process(WatchedEvent event) {
+				System.out.println("WatchedEvent:" + event.getType() + "---" + event.getPath());
+				logger.info("WatchedEvent:" + event.getType() + "---" + event.getPath());
 				// 收到事件通知后的回调函数（应该是我们自己的事件处理逻辑）
 				try {
 					//重新更新服务器列表，并且注册了监听
@@ -59,8 +72,8 @@ public class DistributedClient {
 		serverList = servers;
 		
 		//打印服务器列表
-		System.out.println(serverList);
-		
+		System.out.println(serverList.isEmpty() ? "" :String.join(",", serverList));
+		logger.info(serverList.isEmpty() ? "" :String.join(",", serverList));
 	}
 
 	/**
@@ -68,9 +81,14 @@ public class DistributedClient {
 	 * 
 	 * @throws InterruptedException
 	 */
-	public void handleBussiness() throws InterruptedException {
-		System.out.println("client start working.....");
-		Thread.sleep(Long.MAX_VALUE);
+	public void handleBussiness() {
+		try {
+			System.out.println("client start working.....");
+			logger.info("client start working.....");
+			Thread.sleep(Long.MAX_VALUE);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
 	}
 	
 	

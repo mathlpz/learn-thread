@@ -10,9 +10,12 @@ import org.apache.zookeeper.Watcher;
 import org.apache.zookeeper.Watcher.Event.EventType;
 import org.apache.zookeeper.ZooDefs.Ids;
 import org.apache.zookeeper.ZooKeeper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class DistributedClientLock {
 	
+	private final static Logger logger = LoggerFactory.getLogger(DistributedClientLock.class);
 
 	// 会话超时
 	private static final int SESSION_TIMEOUT = 2000;
@@ -30,12 +33,14 @@ public class DistributedClientLock {
 	 * 连接zookeeper
 	 */
 	public void connectZookeeper() throws Exception {
+		// 获取连接
 		zk = new ZooKeeper(hosts, SESSION_TIMEOUT, new Watcher() {
 			public void process(WatchedEvent event) {
 				try {
-
+					System.out.println("WatchedEvent:" + event.getType() + "---" + event.getPath());
 					// 判断事件类型，此处只处理子节点变化事件
-					if (event.getType() == EventType.NodeChildrenChanged && event.getPath().equals("/" + groupNode)) {
+					if (event.getType() == EventType.NodeChildrenChanged 
+							&& event.getPath().equals("/" + groupNode)) {
 						//获取子节点，并对父节点进行监听
 						List<String> childrenNodes = zk.getChildren("/" + groupNode, true);
 						String thisNode = thisPath.substring(("/" + groupNode + "/").length());
@@ -73,6 +78,8 @@ public class DistributedClientLock {
 					CreateMode.EPHEMERAL_SEQUENTIAL);
 		}
 	}
+	
+	
 
 	/**
 	 * 处理业务逻辑，并且在最后释放锁
@@ -82,14 +89,20 @@ public class DistributedClientLock {
 			System.out.println("gain lock: " + thisPath);
 			Thread.sleep(2000);
 			// do something
-		} finally {
+		} finally {}
 			System.out.println("finished: " + thisPath);
 			// 锟斤拷thisPath删锟斤拷, 锟斤拷锟斤拷thisPath锟斤拷client锟斤拷锟斤拷锟酵ㄖ�
 			// 锟洁当锟斤拷锟酵凤拷锟斤拷
 			zk.delete(this.thisPath, -1);
-		}
+		
 	}
 
+	
+	/**
+	 * 
+	 * @param args
+	 * @throws Exception
+	 */
 	public static void main(String[] args) throws Exception {
 		DistributedClientLock dl = new DistributedClientLock();
 		dl.connectZookeeper();
