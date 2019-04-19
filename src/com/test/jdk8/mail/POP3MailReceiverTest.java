@@ -54,60 +54,20 @@ public class POP3MailReceiverTest {
     // 执行日期标识
     String dateTimeFlag;
 
-    //    String smtpHost = "smtp.qq.com";
-//    String hostServer = "pop.qq.com";
-//    String protocol = "pop3";
-//    String port = "995";
-//    String username = "670077051@qq.com";
-//    String password = "ojwctfnixdusbfih";
-
-    // imap搜索条件无效...
-//    String hostServer = "imap.qq.com";
-//    String protocol = "imap";
-//    String port = "993";
-//    String username = "670077051@qq.com";
-//    String password = "ojwctfnixdusbfih";
-
-
-//    String hostServer = "pop3.126.com"; // 收件服务器 
-//    String protocol = "pop3";
-//    String port = "995"; // 邮件服务端口号 995
-//    String username = "mathlpz@126.com"; // 邮件地址 
-//    String password = "mathlpz126@#"; // 授权码OR密码
-
-//    String hostServer = "imap.126.com"; // 收件服务器 
-//    String protocol = "imap";
-//    String port = "993"; //
-//    String username = "mathlpz@126.com"; // 邮件地址 
-//    String password = "mathlpz126@#"; // 授权码OR密码
-
-//    String hostServer = "pop.139.com"; // 收件服务器 
-//    String protocol = "pop3";
-//    String port = "995"; //
-//    String username = "18867111794@139.com"; // 邮件地址 
-//    String password = "MATHlpz126"; // 授权码OR密码
-
-    // 搜索不正确
-//    String hostServer = "imap.139.com"; // 收件服务器 
-//    String protocol = "imap";
-//    String port = "993"; //
-//    String username = "18867111794@139.com"; // 邮件地址 
-//    String password = "MATHlpz126"; // 授权码OR密码
-
     // 搜索有误差
-//    String hostServer = "pop3.cmhi.chinamobile.com"; // 收件服务器 
+//    String hostServer = "******"; // 收件服务器 
 //    String protocol = "pop3";
 //    String port = "995"; // 邮件服务端口号 995
-//    String username = "liupengzhen@cmhi.chinamobile.com"; // 邮件地址 
-//    String password = "cmcc2017"; // 授权码OR密码
+//    String username = "***"; // 邮件地址 
+//    String password = "******"; // 授权码OR密码
 
-    String hostServer = "imap.cmhi.chinamobile.com"; // 收件服务器 
+    String hostServer = "******"; // 收件服务器 
     String protocol = "imap";
     String port = "993"; //
-    String username = "cmccopenproject@cmhi.chinamobile.com"; // 邮件地址 
-    String password = "Hyxz@cmccopen"; // 授权码OR密码
+    String username = "******"; // 邮件地址 
+    String password = "******"; // 授权码OR密码
 
-    String fromEmail = "wlts@zj.chinamobile.com"; // 发件人
+    String fromEmail = "************"; // 发件人
 
 
     /**
