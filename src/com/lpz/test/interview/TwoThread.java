@@ -16,6 +16,7 @@ public class TwoThread {
 
     final static String str = "abcdefghijk";
     volatile AtomicInteger flag = new AtomicInteger(0);
+    static volatile List<String> list = new ArrayList<>();
 
     ReentrantLock lock = new ReentrantLock();
     Condition oddCondi = lock.newCondition();
@@ -24,7 +25,7 @@ public class TwoThread {
 
     public static void main(String[] args) {
 
-        List<String> list = new ArrayList<>();
+//        List<String> list = new ArrayList<>();
         for (int i = 0; i < str.length(); i++) {
             list.add(str.substring(i, i + 1));
         }

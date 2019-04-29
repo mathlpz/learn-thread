@@ -19,7 +19,11 @@ public class MainTest {
         System.out.println(a == c);
         
         e.intern();
-        
+
+
+        System.out.println("------");
+        System.out.println("123456789".hashCode());
+
     }
     
 }
